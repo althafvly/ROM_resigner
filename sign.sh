@@ -11,14 +11,14 @@ for part in system_a system_ext_a vendor_a product_a odm_a system system_ext ven
     if [ -d $dir/$part ]; then
         if [ $part == system_a ] || [ $part == system ] && [ -d $dir/$part/system ]; then
             if [ -d $dir/$part/system/etc/selinux ] && [ -f $dir/$part/system/etc/selinux/*_mac_permissions.xml ]; then
-                python resign.py $dir/$part/system $security selinux >log.txt
+                python resign.py $dir/$part/system $security selinux
             fi
         else
             if [ -d $dir/$part/etc/selinux ] && [ -f $dir/$part/etc/selinux/*_mac_permissions.xml ]; then
-                python resign.py $dir/$part $security selinux >>log.txt
+                python resign.py $dir/$part $security selinux
             fi
             if [ -d $dir/$part/etc/security ] && [ -f $dir/$part/etc/security/mac_permissions.xml ]; then
-                python resign.py $dir/$part $security security >>log.txt
+                python resign.py $dir/$part $security security
             fi
         fi
     fi
