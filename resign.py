@@ -24,11 +24,13 @@ parser = argparse.ArgumentParser(
 parser.add_argument('RomDir', help='ROM Path')
 parser.add_argument(
     'SecurityDir', help='Security Dir Path (just like https://android.googlesource.com/platform/build/+/master/target/product/security/)')
+parser.add_argument('MacDir', help='Mac Path')
 args = parser.parse_args()
 romdir = args.RomDir
+macdir = args.MacDir
 securitydir = args.SecurityDir
 
-mac_permissions = find("*mac_permissions*", romdir + "/etc/selinux")
+mac_permissions = find("*mac_permissions*", romdir + "/etc/" + macdir)
 
 xmldoc = minidom.parse(mac_permissions)
 itemlist = xmldoc.getElementsByTagName('signer')
