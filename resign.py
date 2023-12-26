@@ -2,6 +2,7 @@
 from xml.dom import minidom
 import re
 import os
+import sys
 import mmap
 import subprocess
 import fnmatch
@@ -24,13 +25,21 @@ parser = argparse.ArgumentParser(
 parser.add_argument('RomDir', help='ROM Path')
 parser.add_argument(
     'SecurityDir', help='Security Dir Path (just like https://android.googlesource.com/platform/build/+/master/target/product/security/)')
-parser.add_argument('MacDir', help='Mac Path')
 args = parser.parse_args()
 romdir = args.RomDir
-macdir = args.MacDir
 securitydir = args.SecurityDir
 
-mac_permissions = find("*mac_permissions*", romdir + "/etc/" + macdir)
+selinux_path = romdir + "/etc/selinux"
+security_path = romdir + "/etc/security"
+
+if os.path.exists(selinux_path):
+    mac_permissions = find("*mac_permissions*", selinux_path)
+else:
+    mac_permissions = find("*mac_permissions*", security_path)
+
+if not mac_permissions:
+    print(("Unable to find mac_permissions"))
+    sys.exit()
 
 xmldoc = minidom.parse(mac_permissions)
 itemlist = xmldoc.getElementsByTagName('signer')

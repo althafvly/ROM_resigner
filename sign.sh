@@ -12,22 +12,20 @@ fi
 dir="$1"
 security="$(pwd)/AOSP_security"
 
-# Loop through the specified directories to perform resigning
-for part in system_a system_ext_a vendor_a product_a odm_a system system_ext vendor product odm; do
+# List of partitions to process
+partitions=(
+    system_a system_ext_a vendor_a product_a odm_a
+    system system_ext vendor product odm
+)
+
+# Loop through system partitions
+for part in "${partitions[@]}"; do
     if [ -d "$dir/$part" ]; then
-        if [[ $part == system_a || $part == system ]] && [ -d "$dir/$part/system" ]; then
-            # For system_a or system, check if system directory exists and contains selinux xml file
-            if [ -d "$dir/$part/system/etc/selinux" ] && [ -f "$dir/$part/system/etc/selinux/*_mac_permissions.xml" ]; then
-                python resign.py "$dir/$part/system" "$security" selinux
-            fi
+        echo "Signing apks/jar in $part partition"
+        if [[ "$part" == "system_a" || "$part" == "system" ]] && [ -d "$dir/$part/system" ]; then
+            python resign.py "$dir/$part/system" "$security"
         else
-            # For other directories, check if etc/selinux and etc/security directories exist and contain respective xml files
-            if [ -d "$dir/$part/etc/selinux" ] && [ -f "$dir/$part/etc/selinux/*_mac_permissions.xml" ]; then
-                python resign.py "$dir/$part" "$security" selinux
-            fi
-            if [ -d "$dir/$part/etc/security" ] && [ -f "$dir/$part/etc/security/mac_permissions.xml" ]; then
-                python resign.py "$dir/$part" "$security" security
-            fi
+            python resign.py "$dir/$part" "$security"
         fi
     fi
 done
